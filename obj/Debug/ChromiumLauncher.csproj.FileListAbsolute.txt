@@ -1,0 +1,7 @@
+C:\Users\rainx\source\repos\ChromiumLauncher\bin\Debug\ChromiumLauncher.exe.config
+C:\Users\rainx\source\repos\ChromiumLauncher\bin\Debug\ChromiumLauncher.exe
+C:\Users\rainx\source\repos\ChromiumLauncher\bin\Debug\ChromiumLauncher.pdb
+C:\Users\rainx\source\repos\ChromiumLauncher\obj\Debug\ChromiumLauncher.csprojAssemblyReference.cache
+C:\Users\rainx\source\repos\ChromiumLauncher\obj\Debug\ChromiumLauncher.csproj.CoreCompileInputs.cache
+C:\Users\rainx\source\repos\ChromiumLauncher\obj\Debug\ChromiumLauncher.exe
+C:\Users\rainx\source\repos\ChromiumLauncher\obj\Debug\ChromiumLauncher.pdb
