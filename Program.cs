@@ -14,13 +14,12 @@ namespace ChromiumLauncher
     class Program
     {
 		///-------------------------------------------------------------------------------------------------------------///
+         /* method to launch "Google Chrome / Chromium" executable
+         * iterate through every "chrome.exe" available in the current launcher directory & sub-directories
+         * execute one each time and waiting for the process to exit before executing the next one
+         */
         static void LaunchChrome(string currentDir, string commandLineArguments, string cacheDir)
         {
-            /*
-            Process chrome = new Process();
-            chrome.StartInfo.FileName = exePath;
-            chrome.StartInfo.Arguments = commandLineArguments;
-            */
 			string cacheDirCommandLineArgument = $" --disk-cache-dir={cacheDir}";
             Process chrome = new Process();
             chrome.StartInfo.Arguments = commandLineArguments + cacheDirCommandLineArgument;
@@ -37,13 +36,23 @@ namespace ChromiumLauncher
                     }
             }
             catch{}
-
         }
 		///-------------------------------------------------------------------------------------------------------------///
-		private static string GetTemporaryDirectory()
+        /*
+         * method that create a temporary directory in the %TEMP% directory
+         * and return the path of the created directory
+         * 
+         * - isFolderNameRandom : toggle whether the temporary folder created is randomely named
+         */
+		private static string GetTemporaryDirectory(bool isFolderNameRandom)
         {
-            string path = Path.Combine(Path.GetTempPath(), "XHCH_Chromium" + Path.GetRandomFileName() + "\\");
-			try
+            string randomFileName = "";
+            if (isFolderNameRandom)
+            {
+                randomFileName = Path.GetRandomFileName();
+            }
+            string path = Path.Combine(Path.GetTempPath(), "XHCH_Chromium" + randomFileName + "\\"); 
+            try
 			{
 				Directory.CreateDirectory(path);
 				return path;
@@ -104,6 +113,8 @@ namespace ChromiumLauncher
             string profileDir = currentDir + "Profile";
             string cacheDir = currentDir + "ProfileCache";
             //profileDir += "Incognito";
+			bool keepCache = false;
+            bool tempCache = false;
 
             string chromeExe = currentDir + @"\Bin\chrome.exe";
             string exeArguments = $"--user-data-dir=\"{profileDir}\" --disable-smooth-scrolling --enable-overlay-scrollbar --disable-notifications --enable-quic --no-default-browser-check --disable-crash-reporter --disable-plugins --allow-insecure-localhost --enable-parallel-downloading";
@@ -119,22 +130,31 @@ namespace ChromiumLauncher
                           "574734135153-9t0gvq8s4o4g7np765b0069gbevq6n91.apps.googleusercontent.com",
                           "46fUpJcn9hQ62n5rDOZBM2Am");
             ///------------------------------------------------------------------////
+            
             if (args.Length != 0)
             {
                 foreach(string arg in args)
                 {
-					if(arg != "--tempcache")
-					{
+					if(arg != "--tempcache" || arg != "--keepcache")
+                    {
 						exeArguments += " " + arg;
 					}
 					if(arg == "--tempcache")
 					{
-						tempDir = GetTemporaryDirectory();
-						if(tempDir != null)
-						{
-							cacheDir = tempDir + "ProfileCache";
-						}					
-					}                   
+                        tempCache = true;
+					}  
+					if(arg == "--keepcache")
+					{
+						keepCache = true;
+					}
+                }
+            }
+            if(tempCache)
+            {
+                tempDir = GetTemporaryDirectory(!keepCache);
+                if (tempDir != null)
+                {
+                    cacheDir = tempDir + "ProfileCache";
                 }
             }
 			///------------------------------------------------------------------////
@@ -147,11 +167,17 @@ namespace ChromiumLauncher
                 catch { }
             }
 
-            //LaunchChrome(chromeExe, exeArguments);
-            CleanupCache(profileDir, cacheDir);
+            //LaunchChrome(chromeExe, exeArguments
+			if(keepCache == false)
+            { 
+                CleanupCache(profileDir, cacheDir);
+            }
             LaunchChrome(currentDir, exeArguments, cacheDir);
-            CleanupCache(profileDir, cacheDir);
-			Cleanup(tempDir);
+            if(keepCache == false)
+            {
+                CleanupCache(profileDir, cacheDir);
+				Cleanup(tempDir);
+			}
             //Cleanup(profileDir);
 
         }
